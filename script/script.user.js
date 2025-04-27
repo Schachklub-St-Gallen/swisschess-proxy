@@ -139,6 +139,18 @@
         }
 
         console.log(tableMarkdown);
+
+        const $textarea = $('<textarea>')
+            .text(tableMarkdown)
+            .css({
+                width: '900px',
+                height: '300px',
+                display: 'block',
+                margin: '20px auto',
+                padding: '10px'
+            });
+
+        $('body').append($textarea);
     }
 
     $(document).ready(() => {
