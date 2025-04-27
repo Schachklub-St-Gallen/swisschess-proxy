@@ -5,7 +5,7 @@
 // @description Adds links to Swisschess sites for Results upload.
 // @match       https://adapter.swisschess.ch/ssb-external*
 // @require     http://code.jquery.com/jquery-3.6.0.min.js
-// @version     0.1.1
+// @version     0.2.0
 // @grant       none
 // ==/UserScript==
 
@@ -16,12 +16,14 @@
     document.body.appendChild(script);
     document.body.removeChild(script);
 })(() => {
+    const swisschessProxyBaseUrl = "http://localhost:8080";
+    const swisschessBaseUrl = "https://www.swisschess.ch";
+
     const getLink = (code) => {
         const originalString = "/schachsport/fl/detail.php?code=" + code;
         const encodedString = window.btoa(originalString);
-        console.log(encodedString);
 
-        return "https://www.swisschess.ch/fuehrungsliste-detail.html?old=" + encodedString;
+        return `${swisschessBaseUrl}/fuehrungsliste-detail.html?old=${encodedString}`;
     }
 
     const linkCodeAndAddElo = (htmlElement) => {
@@ -30,7 +32,7 @@
         }
         const nextCell = htmlElement.nextElementSibling;
         if (nextCell) {
-            $.get(`http://localhost:8080/player?id=${htmlElement.innerText}`, function (data) {
+            $.get(`${swisschessProxyBaseUrl}/player?id=${htmlElement.innerText}`, function (data) {
                 if (data && data.elo) {
                     nextCell.innerHTML += ` (${data.elo})`;
                 }
@@ -101,7 +103,6 @@
 
         const updatedMd = md.replace(scoreRegex, (match, _r1, home, away, _r2) => {
             const scoreString = `${home} - ${away}`;
-            console.log('Extracted score:', scoreString);
 
             originalScore = scoreString;
 
@@ -124,8 +125,6 @@
         let homeTeam = $('table.smm_teams > tbody > tr > td:nth-child(2)')?.text();
         let awayTeam = $('table.smm_teams > tbody > tr > td:nth-child(4)')?.text();
 
-        console.log(tableMarkdown)
-
         const {mdWithReplacedScore, originalScore} = replaceScore(tableMarkdown);
 
         tableMarkdown = mdWithReplacedScore;
@@ -136,9 +135,7 @@
 
             tableMarkdown = replaceHomeAwayTeamHeader(tableMarkdown, homeTeam, awayTeam);
 
-            tableMarkdown =
-                buildTitle(homeTeam, awayTeam, originalScore) +
-                tableMarkdown;
+            tableMarkdown = buildTitle(homeTeam, awayTeam, originalScore) + tableMarkdown;
         }
 
         console.log(tableMarkdown);
