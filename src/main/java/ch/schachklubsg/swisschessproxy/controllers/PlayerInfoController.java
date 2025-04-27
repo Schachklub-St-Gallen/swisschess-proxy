@@ -2,6 +2,7 @@ package ch.schachklubsg.swisschessproxy.controllers;
 
 import ch.schachklubsg.swisschessproxy.Player;
 import ch.schachklubsg.swisschessproxy.services.SwissChessApiClient;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,11 +19,13 @@ public class PlayerInfoController {
         this.swissChessApiClient = swissChessApiClient;
     }
 
+    @CrossOrigin(origins = "https://adapter.swisschess.ch")
     @GetMapping("/player")
     public Mono<Player> greeting(@RequestParam(value = "id") String id) {
         return swissChessApiClient.getPlayerInfo(id);
     }
 
+    @CrossOrigin(origins = "https://adapter.swisschess.ch")
     @GetMapping("/players")
     public Flux<Player> getMultiplePlayers(@RequestParam List<String> ids) {
         return Flux.fromIterable(ids)
